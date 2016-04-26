@@ -8,45 +8,30 @@ router.get('/', function(req, res, next) {
 });
 
 /* GET counts and locations objects*/
-router.get('/fuck', function(req, res, next) {
-    var tweets = [];
-    fuckTweets.forEach( function(entry) {
-            //console.log("This tweet is:"+entry.text);
-            var tweet = {author:entry.coordinates, text:entry.text};
-            tweets.push(tweet);
-    });
+
+router.get('/all', function(req, res, next){
+    counts = [fuckTweets, shitTweets, assTweets, damnTweets];
+    res.send(JSON.stringify(counts));
     fuckTweets = [];
-    res.send(JSON.stringify(tweets));
+    shitTweets = [];
+    assTweets = [];
+    damnTweets = [];
+});
+router.get('/fuck', function(req, res, next) {
+    res.send(JSON.stringify(fuckTweets));
+    fuckTweets = [];
 });
 router.get('/shit', function(req, res, next) {
-    var tweets = [];
-    shitTweets.forEach( function(entry) {
-            //console.log("This tweet is:"+entry.text);
-            var tweet = {author:entry.coordinates, text:entry.text};
-            tweets.push(tweet);
-    });
+    res.send(JSON.stringify(shitTweets));
     shitTweets = [];
-    res.send(JSON.stringify(tweets));
 });
-router.get('/asshole', function(req, res, next) {
-    var tweets = [];
-    assholeTweets.forEach( function(entry) {
-            //console.log("This tweet is:"+entry.text);
-            var tweet = {author:entry.coordinates, text:entry.text};
-            tweets.push(tweet);
-    });
-    assholeTweets = [];
-    res.send(JSON.stringify(tweets));
+router.get('/ass', function(req, res, next) {
+    res.send(JSON.stringify(assTweets));
+    assTweets = [];
 });
 router.get('/damn', function(req, res, next) {
-    var tweets = [];
-    damnTweets.forEach( function(entry) {
-            //console.log("This tweet is:"+entry.text);
-            var tweet = {author:entry.coordinates, text:entry.text};
-            tweets.push(tweet);
-    });
+    res.send(JSON.stringify(damnTweets));
     damnTweets = [];
-    res.send(JSON.stringify(tweets));
 });
 
 module.exports = router;

@@ -2,11 +2,209 @@
 <html>
   <head>
     <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/jquery-jvectormap-2.0.3.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="/stylesheets/jquery-ui.min.css" media="all" />
     <link rel='stylesheet' href='/stylesheets/style.css' />
-    <script src = "https://code.jquery.com/jquery-git2.min.js" />
+    <script src = "https://code.jquery.com/jquery-git2.min.js"></script>
+    <script src="//d3js.org/d3.v3.min.js"></script>
+    <script src="/javascripts/jquery-jvectormap-2.0.3.min.js"></script> <!--for rendering the map -->
+    <script src="/javascripts/jquery-jvectormap-us-aea.js"></script>
+    <script src="/javascripts/jquery-ui.min.js"></script>
+    <script>
+
+    function stateCounts() {
+            return {
+            "US-VA" : 0,
+            "US-PA" : 0,
+            "US-TN" : 0,
+            "US-WV" : 0,
+            "US-NV" : 0,
+            "US-TX" : 0,
+            "US-NH" : 0,
+            "US-NY" : 0,
+            "US-HI" : 0,
+            "US-VT" : 0,
+            "US-NM" : 0,
+            "US-NC" : 0,
+            "US-ND" : 0,
+            "US-NE" : 0,
+            "US-LA" : 0,
+            "US-SD" : 0,
+            "US-DC" : 0,
+            "US-DE" : 0,
+            "US-FL" : 0,
+            "US-CT" : 0,
+            "US-WA" : 0,
+            "US-KS" : 0,
+            "US-WI" : 0,
+            "US-OR" : 0,
+            "US-KY" : 0,
+            "US-ME" : 0,
+            "US-OH" : 0,
+            "US-OK" : 0,
+            "US-ID" : 0,
+            "US-WY" : 0,
+            "US-UT" : 0,
+            "US-IN" : 0,
+            "US-IL" : 0,
+            "US-AK" : 0,
+            "US-NJ" : 0,
+            "US-CO" : 0,
+            "US-MD" : 0,
+            "US-MA" : 0,
+            "US-AL" : 0,
+            "US-MO" : 0,
+            "US-MN" : 0,
+            "US-CA" : 0,
+            "US-IA" : 0,
+            "US-MI" : 0,
+            "US-GA" : 0,
+            "US-AZ" : 0,
+            "US-MT" : 0,
+            "US-MS" : 0,
+            "US-SC" : 0,
+            "US-RI" : 0,
+            "US-AR" : 0,
+        }
+    }
+
+    var explativesCount = {
+        "fuck" : stateCounts(),
+        "shit" : stateCounts(),
+        "ass"  : stateCounts(),
+        "damn" : stateCounts()
+    }
+
+    function resetCounts() {
+        explativesCount["fuck"] = stateCounts();
+        explativesCount["shit"] = stateCounts();
+        explativesCount["ass"] = stateCounts();
+        explativesCount["damn"] = stateCounts();
+        /*for (var state in stateCounts) {
+            if (stateCounts.hasOwnProperty(state)) {
+                stateCounts[state] = 0;
+            }
+        }*/
+    }
+
+    function totalCounts(counts) {
+        var total = 0;
+        for (var state in counts) {
+            if (counts.hasOwnProperty(state)) {
+                    total += counts[state];
+            }
+        }
+        return total;
+    }
+
+    //Makes the ajax call to the server to get counts
+    function getCounts(){
+        $.ajax({
+            url: "all",
+            success: updateCounts,
+            async: true
+        })
+        return true;
+    }
+
+    function updateCounts(data){
+        data=JSON.parse(data);
+        for (i = 0; i < 4; i++){
+            var word;
+            switch (i){
+                case 0:
+                    word = "fuck";
+                    break;
+                case 1:
+                    word = "shit";
+                    break;
+                case 2:
+                    word = "ass";
+                    break;
+                case 3:
+                    word = "damn";
+                    break;
+            }
+            $(data[i]).each(function(itr, state){
+                state = "US-"+state;
+                if(explativesCount[word][state] != undefined){
+                    count = explativesCount[word][state];
+                    explativesCount[word][state] = count + 1;
+                }
+            });
+        }
+    }
+
+    function main() {
+        var word = "fuck";
+        var wordEm = document.getElementById('word');
+        wordEm.innerHTML = word.toUpperCase();
+        $('#map').vectorMap({
+            map: 'us_aea',
+            series: {
+                regions : [{
+                    values: explativesCount[word],
+                    scale: ['#C8EEFF', '#0071A4'],
+                    normalizeFunction: 'polynomial',
+                    min: 0,
+                    max: 100
+                }]
+            },
+            onRegionTipShow: function(e, el, code){
+                el.html(el.html()+ "<br> "+word+" : "+explativesCount[word][code]+"<br>");
+            }
+        });
+
+        var mapObject = $('#map').vectorMap('get', 'mapObject');
+
+        $(".slider").slider({
+          value: 0,
+          min: 0,
+          max: 3,
+          step: 1,
+          slide: function( event, ui ) {
+              val = ui.value;
+              switch (ui.value){
+                  case 0:
+                      word = "fuck";
+                      break;
+                  case 1:
+                      word = "shit";
+                      break;
+                  case 2:
+                      word = "ass";
+                      break;
+                  case 3:
+                      word = "damn";
+                      break;
+                }
+            mapObject.series.regions[0].setValues(explativesCount[word]);
+            wordEm.innerHTML = word.toUpperCase();
+            }
+        });
+
+        var inter = setInterval(function(){
+            getCounts();
+            //mapObject.series.regions[0].clear();
+            mapObject.series.regions[0].setValues(explativesCount[word]);
+            mapObject.onRegionTipShow = function(e, el, code){
+                el.html(el.html()+ "<br> ("+word+" : "+explativesCount[word][code]+")<br>");
+            }
+        }, 1000);
+    }
+    </script>
   </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+  <body onload="main()">
+      <div class = "text">
+          <h1><%= title %></h1>
+          <p>
+              Welcome to <%= title %>.<br>
+              The word you are currently tracking is:<br>
+              <em id= word></em>
+          </p>
+    </div>
+    <div id="map"></div>
+    <div class="slider" style=""></div>
+    <div class = "text"><p>Slide to change the word</p></div>
   </body>
 </html>

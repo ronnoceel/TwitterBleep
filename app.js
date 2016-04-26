@@ -10,9 +10,6 @@ var users = require('./routes/users');
 
 var streaming = require ('./libs/streaming.js')
 
-//Reads in the state/coordinate file as a json object for later use.
-var stateCoords = require('./libs/stateCoords.json');
-
 var app = express();
 
 // view engine setup
@@ -63,7 +60,7 @@ app.use(function(err, req, res, next) {
 
 fuckTweets = new Array();
 shitTweets = new Array();
-assholeTweets = new Array();
+assTweets = new Array();
 damnTweets = new Array();
 
 module.exports = app;
