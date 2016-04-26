@@ -1,6 +1,6 @@
 # TwitterBleep
 
-Twitter Bleep is a single-page webapp that shows the distribution of explicit words in tweets across the country, by state.
+Twitter Bleep is a single-page webapp that shows the distribution of explicit words in tweets across the country, by state. It does this by communicating with the Twitter steaming api, while using node.js as a backend.
 
 # To Run
 
