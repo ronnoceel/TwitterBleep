@@ -13,3 +13,5 @@ Twitter Bleep is a single-page webapp that shows the distribution of explicit wo
 ```
 DEBUG=myapp:* npm start
 ```
+
+Then open localhost:3000 on your web browser to view the page.
